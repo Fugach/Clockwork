@@ -1,3 +1,7 @@
+# Перевожу мод Clockwork на русский язык.
+
+Ниже будет оригинальное описание проекта
+
 <p align="center"><img width="256" height="256" alt="530234144-7d300fc0-899c-4986-bf94-255e07fec3dd_scaled_7x_pngcrushed" src="https://github.com/user-attachments/assets/7db38530-3716-40ed-8290-2b5c222eefb3" /></p>
 <h1 align="center">Clockwork  <br>
 	<a href="https://discord.gg/x9db2PW9"><img src="https://img.shields.io/discord/1362164016784474202?color=5865F2&label=Discord&style=flat" alt="Discord"></a>
