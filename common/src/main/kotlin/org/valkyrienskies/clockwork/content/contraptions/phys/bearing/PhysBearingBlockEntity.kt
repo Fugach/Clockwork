@@ -21,6 +21,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.Mth
 import net.minecraft.world.level.ClipContext
+import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 import org.joml.*
@@ -58,6 +59,7 @@ import org.valkyrienskies.kelvin.util.KelvinExtensions.toVector3d
 import org.valkyrienskies.mod.api.BlockEntityPhysicsListener
 import org.valkyrienskies.mod.api.dimensionId
 import org.valkyrienskies.mod.common.*
+import org.valkyrienskies.mod.common.assembly.ICopyableBlock
 import org.valkyrienskies.mod.common.assembly.ShipAssembler.assembleToShip
 import org.valkyrienskies.mod.common.assembly.VSAssemblyEvents
 import org.valkyrienskies.mod.common.util.SplittingDisablerAttachment
@@ -304,10 +306,6 @@ class PhysBearingBlockEntity(type: BlockEntityType<*>?, pos: BlockPos?, state: B
     }
 
     override fun read(tag: CompoundTag, clientPacket: Boolean) {
-        if (wasMoved) {
-            super.read(tag, clientPacket)
-            return
-        }
         val angleBefore = targetAngle
         open = tag.getBoolean(ClockworkConstants.Nbt.OPEN)
         isRunning = tag.getBoolean(ClockworkConstants.Nbt.RUNNING)
@@ -642,7 +640,7 @@ class PhysBearingBlockEntity(type: BlockEntityType<*>?, pos: BlockPos?, state: B
         val subCouldSplit = subShip.getAttachment<SplittingDisablerAttachment>()?.let { if (it.canSplit()) { it.disableSplitting(); true } else {false} } ?: false
         val mainCouldSplit = mainShip?.getAttachment<SplittingDisablerAttachment>()?.let { if (it.canSplit()) { it.disableSplitting(); true } else {false} } ?: false
 
-        val hasMoved = PhysBearingAssembler.moveBlocksFromTo(level, blocks, true, inSubship, inMain)
+        val hasMoved = PhysBearingAssembler.moveBlocksFromTo(level, blocks, true, inSubship, inMain, subShip, mainShip)
 
         if (subCouldSplit) { subShip.getAttachment<SplittingDisablerAttachment>()?.enableSplitting() }
         if (mainCouldSplit) { mainShip?.getAttachment<SplittingDisablerAttachment>()?.enableSplitting() }

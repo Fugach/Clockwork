@@ -43,10 +43,13 @@ class WanderwandItem(properties: Properties) : CWItem(properties) {
 
     override fun inventoryTick(stack: ItemStack, level: Level, entity: Entity, slotId: Int, isSelected: Boolean) {
         if (!level.isClientSide && entity is ServerPlayer) {
-            if (!stack.orCreateTag.getBoolean("hasLoaded")) {
-                stack.tag!!.putBoolean("hasLoaded", true)
-                if (stack.tag!!.contains("selectedBlocks")) {
-                    sendTo(WanderwandRenderUpdatePacket(BlockPos.ZERO, ToolType.SELECT, blocks = stack.tag!!.get("selectedBlocks") as CompoundTag), entity as ServerPlayer)
+            val tag = stack.orCreateTag
+            if (!isSelected) {
+                tag.putBoolean("hasLoaded", false)
+            } else if (!tag.getBoolean("hasLoaded")) {
+                tag.putBoolean("hasLoaded", true)
+                if (tag.contains("selectedBlocks")) {
+                    sendTo(WanderwandRenderUpdatePacket(BlockPos.ZERO, ToolType.SELECT, blocks = tag.get("selectedBlocks") as CompoundTag), entity)
                 }
             }
         }
@@ -59,7 +62,7 @@ class WanderwandItem(properties: Properties) : CWItem(properties) {
         fun select(sLevel: ServerLevel, sPlayer: ServerPlayer, firstPos: BlockPos, secondPos: BlockPos, isSecond: Boolean, deselect: Boolean, leftClick: Boolean) {
             if (!isSecond) {
                 if (leftClick && sPlayer.mainHandItem.item is WanderwandItem) {
-                    val existingSelection = sPlayer.mainHandItem.tag?.get("selectedBlocks") as CompoundTag?
+                    val existingSelection = sPlayer.mainHandItem.tag?.get("selectedBlocks") as? CompoundTag?
                     if (existingSelection != null) {
                         val existingSelectionDeser = readAABBSetFromNBT(existingSelection)
                         val existingAABB = existingSelectionDeser.find { it.containsPoint(firstPos.toJOML())}
@@ -105,7 +108,7 @@ class WanderwandItem(properties: Properties) : CWItem(properties) {
                         wand.tag?.put("selectedBlocks", writeAABBSetToNBT(out))
                     }
                 }
-                sendTo(WanderwandRenderUpdatePacket(firstPos, if (deselect) ToolType.DESELECT else ToolType.SELECT, blocks = wand.tag?.get("selectedBlocks") as CompoundTag?), sPlayer)
+                sendTo(WanderwandRenderUpdatePacket(firstPos, if (deselect) ToolType.DESELECT else ToolType.SELECT, blocks = wand.tag?.get("selectedBlocks") as? CompoundTag?), sPlayer)
             }
         }
 
